@@ -454,6 +454,58 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
 .wr-hist-section-lbl{font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:0.08em;color:var(--text3);text-transform:uppercase;margin-bottom:3px;}
 .wr-hist-section-lbl span{margin-right:4px;}
 .wr-hist-text{font-size:13px;color:var(--text2);font-style:italic;line-height:1.5;}
+
+/* ── TIME BLOCK SYSTEM ── */
+.tb-header{display:flex;align-items:center;justify-content:space-between;padding:14px 16px 8px;}
+.tb-title{font-family:'Cinzel',serif;font-size:9px;letter-spacing:0.18em;color:var(--text3);text-transform:uppercase;}
+.tb-clear-btn{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--red);opacity:0.5;background:none;border:none;cursor:pointer;padding:0;transition:opacity 0.18s;}
+.tb-clear-btn:hover{opacity:1;}
+.tb-grid{padding:0 16px;margin-bottom:16px;}
+.tb-slot{display:flex;align-items:stretch;gap:0;margin-bottom:2px;min-height:32px;}
+.tb-time{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--text3);width:38px;flex-shrink:0;padding-top:9px;text-align:right;padding-right:8px;}
+.tb-time.hour{color:var(--text2);}
+.tb-block{flex:1;border-radius:6px;border:0.5px dashed var(--border);background:transparent;cursor:pointer;padding:7px 10px;transition:all 0.15s;position:relative;min-height:32px;display:flex;align-items:center;}
+.tb-block:hover{border-color:var(--border2);background:var(--bg3);}
+.tb-block.filled{border-style:solid;border-color:transparent;}
+.tb-block-name{font-size:12px;color:var(--text);line-height:1.3;flex:1;}
+.tb-block-type{font-family:'JetBrains Mono',monospace;font-size:8px;padding:1px 6px;border-radius:20px;margin-left:6px;flex-shrink:0;opacity:0.85;}
+.tb-block-empty{font-size:11px;color:var(--text3);opacity:0.4;font-style:italic;}
+.tb-modal-colors{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px;}
+.tb-color-btn{width:26px;height:26px;border-radius:50%;cursor:pointer;border:2px solid transparent;transition:all 0.15s;flex-shrink:0;}
+.tb-color-btn.sel{border-color:#fff;transform:scale(1.15);}
+.tb-type-row{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px;}
+.tb-type-btn{font-family:'JetBrains Mono',monospace;font-size:9px;padding:4px 10px;border-radius:20px;border:0.5px solid var(--border);color:var(--text3);background:transparent;cursor:pointer;transition:all 0.15s;}
+.tb-type-btn.sel{border-color:var(--gold);color:var(--gold);background:var(--gold-dim);}
+.tb-span-row{display:flex;align-items:center;gap:10px;margin-bottom:14px;}
+.tb-span-label{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text3);}
+.tb-span-btns{display:flex;gap:5px;}
+.tb-span-btn{font-family:'JetBrains Mono',monospace;font-size:10px;padding:4px 10px;border-radius:20px;border:0.5px solid var(--border);color:var(--text3);background:transparent;cursor:pointer;transition:all 0.15s;}
+.tb-span-btn.sel{border-color:var(--gold);color:var(--gold);background:var(--gold-dim);}
+.tb-todo-divider{display:flex;align-items:center;gap:8px;padding:0 16px;margin:4px 0 12px;}
+.tb-todo-divider-line{flex:1;height:0.5px;background:var(--border);}
+.tb-todo-divider-lbl{font-family:'Cinzel',serif;font-size:9px;letter-spacing:0.18em;color:var(--text3);text-transform:uppercase;}
+
+/* Tasks inside blocks */
+.tb-block-tasks{margin-top:5px;display:flex;flex-direction:column;gap:3px;}
+.tb-inline-task{display:flex;align-items:center;gap:7px;padding:4px 7px;border-radius:6px;background:rgba(0,0,0,0.15);cursor:pointer;transition:opacity 0.15s;}
+.tb-inline-task.done{opacity:0.4;}
+.tb-inline-task-chk{width:13px;height:13px;border-radius:50%;border:1px solid rgba(255,255,255,0.3);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:8px;color:transparent;transition:all 0.15s;}
+.tb-inline-task.done .tb-inline-task-chk{background:rgba(255,255,255,0.6);color:#000;border-color:transparent;}
+.tb-inline-task-text{font-size:11px;color:rgba(255,255,255,0.85);line-height:1.3;flex:1;}
+.tb-inline-task.done .tb-inline-task-text{text-decoration:line-through;opacity:0.6;}
+
+/* Unscheduled section */
+.tb-unsched-section{margin-top:4px;}
+
+/* Task picker in modal */
+.tb-task-picker{display:flex;flex-direction:column;gap:5px;max-height:160px;overflow-y:auto;margin-bottom:4px;}
+.tb-task-pick-item{display:flex;align-items:center;gap:9px;padding:8px 10px;border:0.5px solid var(--border);border-radius:8px;cursor:pointer;transition:all 0.15s;background:var(--bg2);}
+.tb-task-pick-item.sel{border-color:var(--gold);background:var(--gold-dim);}
+.tb-task-pick-chk{width:14px;height:14px;border-radius:50%;border:1px solid var(--text3);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:8px;color:transparent;transition:all 0.15s;}
+.tb-task-pick-item.sel .tb-task-pick-chk{background:var(--gold);border-color:transparent;color:#000;}
+.tb-task-pick-text{font-size:13px;color:var(--text2);flex:1;line-height:1.3;}
+.tb-task-pick-item.sel .tb-task-pick-text{color:var(--text);}
+.tb-task-pick-empty{font-size:12px;color:var(--text3);font-style:italic;padding:8px 0;}
 </style>
 </head>
 <body>
@@ -564,18 +616,38 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
   </div>
 </div>
 
-<!-- TODO -->
+<!-- TODO / PLAN & DO -->
 <div class="screen" id="screen-todo">
-  <div class="app-header"><div class="app-title">Daily To-Do</div><div class="ornament">· · ·</div></div>
+  <div class="app-header">
+    <div class="app-title">Plan & Do</div>
+    <div class="ornament">· · ·</div>
+  </div>
   <div class="scroll-area">
-    <div style="padding:0 16px;margin-top:14px">
-      <div class="todo-input-row">
-        <input type="text" id="todo-input" class="todo-input" placeholder="Add a task for today..." maxlength="120" onkeydown="if(event.key==='Enter')addTodo()">
-        <button class="todo-add-btn" onclick="addTodo()">+</button>
-      </div>
-      <div id="todo-list" style="margin-top:12px"></div>
+    <!-- Date + clear -->
+    <div class="tb-header">
+      <div class="tb-title">◈ <span id="tb-date-lbl"></span></div>
+      <button class="tb-clear-btn" onclick="clearTimeBlocks()">Clear blocks</button>
     </div>
-    <div style="height:12px"></div>
+
+    <!-- Time block grid (tasks live inside blocks) -->
+    <div class="tb-grid" id="tb-grid"></div>
+
+    <!-- Unscheduled tasks -->
+    <div class="tb-unsched-section" id="tb-unsched-section">
+      <div class="tb-todo-divider">
+        <div class="tb-todo-divider-line"></div>
+        <div class="tb-todo-divider-lbl">Unscheduled</div>
+        <div class="tb-todo-divider-line"></div>
+      </div>
+      <div style="padding:0 16px 6px;">
+        <div class="todo-input-row">
+          <input type="text" id="todo-input" class="todo-input" placeholder="Add a task..." maxlength="120" onkeydown="if(event.key==='Enter')addTodo()">
+          <button class="todo-add-btn" onclick="addTodo()">+</button>
+        </div>
+        <div id="todo-list" style="margin-top:10px"></div>
+      </div>
+    </div>
+    <div style="height:24px"></div>
   </div>
 </div>
 
@@ -587,6 +659,43 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
   <button class="nb" onclick="go('council',this)"><div class="ni">⬡</div><div class="nl">Council</div></button>
   <button class="nb" onclick="go('ranks',this)"><div class="ni">✦</div><div class="nl">Ranks</div></button>
 </nav>
+</div>
+
+<!-- TIME BLOCK MODAL -->
+<div class="modal-ov" id="tb-modal">
+  <div class="modal" style="padding-bottom:36px;max-height:88vh;overflow-y:auto;">
+    <div class="modal-ttl" id="tb-modal-ttl" style="color:var(--gold);font-size:13px;"></div>
+    <div class="wr-modal-week" id="tb-modal-time" style="margin-bottom:14px;"></div>
+
+    <div style="margin-bottom:13px;">
+      <div class="gm-label">Block name</div>
+      <input type="text" id="tb-name-inp" class="gm-input" placeholder="e.g. Deep Work — Audit Report" maxlength="60">
+    </div>
+
+    <div class="gm-label" style="margin-bottom:8px;">Type <span style="color:var(--text3);font-size:10px;font-style:italic">(free text or tap below)</span></div>
+    <div style="margin-bottom:8px;">
+      <input type="text" id="tb-type-inp" class="gm-input" placeholder="e.g. Deep Work, Rest, Admin..." maxlength="30">
+    </div>
+    <div class="tb-type-row" id="tb-type-suggestions"></div>
+
+    <div class="gm-label" style="margin-bottom:8px;">Color</div>
+    <div class="tb-modal-colors" id="tb-color-picker"></div>
+
+    <div class="tb-span-row">
+      <div class="tb-span-label">Duration</div>
+      <div class="tb-span-btns" id="tb-span-btns"></div>
+    </div>
+
+    <!-- Task assignment -->
+    <div class="gm-label" style="margin-bottom:8px;">Assign tasks to this block</div>
+    <div id="tb-task-picker" class="tb-task-picker"></div>
+
+    <div class="mbtns" style="margin-top:16px;">
+      <button class="mbtn can" onclick="closeTbModal()">Cancel</button>
+      <button class="mbtn can" style="color:var(--red);border-color:rgba(200,64,64,0.28);" onclick="deleteTbBlock()">Delete</button>
+      <button class="mbtn conf" style="background:var(--gold-dim);border-color:rgba(200,168,75,0.4);color:var(--gold)" onclick="saveTbBlock()">Save</button>
+    </div>
+  </div>
 </div>
 
 <!-- WEEKLY REVIEW MODAL -->
@@ -2344,6 +2453,341 @@ function updateWrBtn() {
 }
 
 updateWrBtn();
+
+// ═══ TIME BLOCK SYSTEM (v2 — tasks inside blocks) ═══
+
+const TB_START = 5;
+const TB_END   = 23;
+const TB_SLOTS = (TB_END - TB_START) * 2; // 36 slots
+
+const TB_COLORS = [
+  '#f0b429','#e07030','#4aacee','#30c878','#a870e8',
+  '#e06040','#e04080','#378ADD','#639922','#D85A30',
+  '#7F77DD','#c8a84b'
+];
+
+if (!S.timeBlocks) S.timeBlocks = {};
+
+function getTbBlocks() {
+  if (!S.timeBlocks) S.timeBlocks = {};
+  if (!S.timeBlocks[today]) S.timeBlocks[today] = {};
+  return S.timeBlocks[today];
+}
+
+function slotToTime(slot) {
+  const totalMins = TB_START * 60 + slot * 30;
+  const h = Math.floor(totalMins / 60);
+  const m = totalMins % 60;
+  const ampm = h < 12 ? 'AM' : 'PM';
+  const h12 = h % 12 || 12;
+  return `${h12}:${m === 0 ? '00' : '30'} ${ampm}`;
+}
+
+// Returns todo ids that are assigned to ANY block today
+function getScheduledTodoIds() {
+  const blocks = getTbBlocks();
+  const ids = new Set();
+  Object.values(blocks).forEach(b => {
+    if (b && b.tasks) b.tasks.forEach(id => ids.add(id));
+  });
+  return ids;
+}
+
+function renderTbGrid() {
+  const grid = document.getElementById('tb-grid');
+  if (!grid) return;
+  const blocks = getTbBlocks();
+
+  const lbl = document.getElementById('tb-date-lbl');
+  if (lbl) {
+    lbl.textContent = new Date().toLocaleDateString('en-US', {weekday:'short', month:'short', day:'numeric'});
+  }
+
+  grid.innerHTML = '';
+  let skipUntil = -1;
+
+  for (let i = 0; i < TB_SLOTS; i++) {
+    const b = blocks[i];
+    const isHour = (i % 2 === 0);
+
+    if (i < skipUntil) continue;
+
+    let span = 1;
+    if (b && b.span) { span = b.span; skipUntil = i + span; }
+
+    const row = document.createElement('div');
+    row.className = 'tb-slot' + (isHour ? ' hour-start' : '');
+    row.style.minHeight = (32 * span + (span - 1) * 2) + 'px';
+
+    // Time label — show every hour on the left
+    const timeEl = document.createElement('div');
+    timeEl.className = 'tb-time' + (isHour ? ' hour' : '');
+    timeEl.textContent = isHour ? slotToTime(i) : '';
+
+    const blockEl = document.createElement('div');
+    blockEl.className = 'tb-block' + (b ? ' filled' : '');
+
+    if (b && !b._spanOf) {
+      blockEl.style.background = b.color + '1a';
+      blockEl.style.borderColor = b.color + '77';
+      blockEl.style.alignItems = 'flex-start';
+      blockEl.style.flexDirection = 'column';
+
+      // Block header
+      const header = document.createElement('div');
+      header.style.cssText = 'display:flex;align-items:center;width:100%;gap:6px;';
+      header.innerHTML = `
+        <div class="tb-block-name" style="color:${b.color}">${b.name}</div>
+        ${b.type ? `<div class="tb-block-type" style="background:${b.color}22;color:${b.color};border:0.5px solid ${b.color}44">${b.type}</div>` : ''}
+      `;
+      blockEl.appendChild(header);
+
+      // Inline tasks
+      if (b.tasks && b.tasks.length > 0) {
+        const taskWrap = document.createElement('div');
+        taskWrap.className = 'tb-block-tasks';
+        b.tasks.forEach(tid => {
+          const t = (S.todos || []).find(x => x.id === tid);
+          if (!t) return;
+          const ti = document.createElement('div');
+          ti.className = 'tb-inline-task' + (t.done ? ' done' : '');
+          ti.innerHTML = `
+            <div class="tb-inline-task-chk">${t.done ? '✓' : ''}</div>
+            <div class="tb-inline-task-text">${t.text}</div>
+          `;
+          ti.onclick = (e) => { e.stopPropagation(); toggleTodo(tid); renderTbGrid(); renderTodos(); };
+          taskWrap.appendChild(ti);
+        });
+        blockEl.appendChild(taskWrap);
+      }
+
+      blockEl.onclick = () => openTbModal(i);
+    } else if (!b) {
+      blockEl.innerHTML = `<div class="tb-block-empty">+ add block</div>`;
+      blockEl.onclick = () => openTbModal(i);
+    }
+
+    row.appendChild(timeEl);
+    row.appendChild(blockEl);
+    grid.appendChild(row);
+  }
+
+  // Re-render todos so unscheduled section updates
+  renderTodos();
+}
+
+// ── renderTodos override: only show unscheduled tasks ──
+const _origRenderTodos = window.renderTodos;
+window.renderTodos = function() {
+  const el = document.getElementById('todo-list');
+  if (!el) return;
+
+  const todos = (S.todos || []);
+  const scheduledIds = getScheduledTodoIds();
+
+  // Unscheduled = not assigned to any block
+  const unscheduled = todos.filter(t => !scheduledIds.has(t.id));
+  const pending = unscheduled.filter(t => !t.done);
+  const done = unscheduled.filter(t => t.done);
+
+  el.innerHTML = '';
+
+  if (unscheduled.length === 0 && todos.length > 0) {
+    const msg = document.createElement('div');
+    msg.style.cssText = 'text-align:center;padding:16px 0;color:var(--inner);font-style:italic;font-size:13px;';
+    msg.textContent = '✦ All tasks are scheduled';
+    el.appendChild(msg);
+    return;
+  }
+
+  if (unscheduled.length === 0) {
+    const msg = document.createElement('div');
+    msg.style.cssText = 'text-align:center;padding:16px 0;color:var(--text3);font-style:italic;font-size:13px;';
+    msg.textContent = 'No tasks yet. Add one above.';
+    el.appendChild(msg);
+    return;
+  }
+
+  pending.forEach(t => el.appendChild(buildTodoItem(t)));
+
+  if (done.length > 0) {
+    const lbl = document.createElement('div');
+    lbl.className = 'todo-section-label';
+    lbl.innerHTML = `Done <button class="todo-clear-btn" onclick="clearDoneTodos()">Clear</button>`;
+    el.appendChild(lbl);
+    done.forEach(t => el.appendChild(buildTodoItem(t)));
+  }
+};
+
+// Modal state
+let tbEditingSlot = -1;
+let tbSelColor = TB_COLORS[0];
+let tbSelSpan = 1;
+let tbSelTasks = new Set();
+
+function openTbModal(slotIdx) {
+  tbEditingSlot = slotIdx;
+  const blocks = getTbBlocks();
+  const b = blocks[slotIdx] || {};
+
+  tbSelColor = b.color || TB_COLORS[0];
+  tbSelSpan  = b.span  || 1;
+  tbSelTasks = new Set(b.tasks || []);
+
+  document.getElementById('tb-modal-ttl').textContent = slotToTime(slotIdx) + ' — ' + slotToTime(slotIdx + tbSelSpan);
+  document.getElementById('tb-modal-time').textContent = b.name ? 'Editing block' : 'New block';
+  document.getElementById('tb-name-inp').value = b.name || '';
+  document.getElementById('tb-type-inp').value = b.type || '';
+
+  // Color picker
+  document.getElementById('tb-color-picker').innerHTML = TB_COLORS.map(c =>
+    `<div class="tb-color-btn${c===tbSelColor?' sel':''}" style="background:${c}" onclick="selectTbColor('${c}')"></div>`
+  ).join('');
+
+  // Type suggestions
+  document.getElementById('tb-type-suggestions').innerHTML =
+    ['Deep Work','Shallow Work','Rest','Learning','Exercise','Admin'].map(t =>
+      `<button class="tb-type-btn${document.getElementById('tb-type-inp').value===t?' sel':''}" onclick="selectTbType('${t}')">${t}</button>`
+    ).join('');
+
+  // Span buttons
+  const maxSpan = Math.min(8, TB_SLOTS - slotIdx);
+  document.getElementById('tb-span-btns').innerHTML =
+    [1,2,3,4,6,8].filter(s => s <= maxSpan).map(s => {
+      const lbl = s===1?'30m':s===2?'1h':s===3?'1.5h':s===4?'2h':s===6?'3h':'4h';
+      return `<button class="tb-span-btn${s===tbSelSpan?' sel':''}" onclick="selectTbSpan(${s},${slotIdx})">${lbl}</button>`;
+    }).join('');
+
+  // Task picker — show all unscheduled + tasks already in this block
+  const scheduledIds = getScheduledTodoIds();
+  const eligible = (S.todos || []).filter(t =>
+    !t.done && (!scheduledIds.has(t.id) || (b.tasks || []).includes(t.id))
+  );
+  const tp = document.getElementById('tb-task-picker');
+  if (eligible.length === 0) {
+    tp.innerHTML = `<div class="tb-task-pick-empty">No pending tasks. Add tasks in the Unscheduled section first.</div>`;
+  } else {
+    tp.innerHTML = eligible.map(t =>
+      `<div class="tb-task-pick-item${tbSelTasks.has(t.id)?' sel':''}" onclick="toggleTbTask('${t.id}')">
+        <div class="tb-task-pick-chk">${tbSelTasks.has(t.id)?'✓':''}</div>
+        <div class="tb-task-pick-text">${t.text}</div>
+      </div>`
+    ).join('');
+  }
+
+  document.getElementById('tb-modal').classList.add('show');
+  setTimeout(() => document.getElementById('tb-name-inp').focus(), 100);
+}
+
+function toggleTbTask(id) {
+  if (tbSelTasks.has(id)) tbSelTasks.delete(id);
+  else tbSelTasks.add(id);
+  // Re-render picker
+  document.querySelectorAll('.tb-task-pick-item').forEach(el => {
+    const tid = el.querySelector('.tb-task-pick-text') ? el.onclick.toString().match(/'([^']+)'/)?.[1] : null;
+  });
+  // Simpler: just re-render the picker
+  const tp = document.getElementById('tb-task-picker');
+  tp.querySelectorAll('.tb-task-pick-item').forEach(el => {
+    const onclick = el.getAttribute('onclick');
+    const m = onclick && onclick.match(/'([^']+)'/);
+    if (m) {
+      const tid = m[1];
+      el.classList.toggle('sel', tbSelTasks.has(tid));
+      el.querySelector('.tb-task-pick-chk').textContent = tbSelTasks.has(tid) ? '✓' : '';
+    }
+  });
+}
+
+function selectTbColor(c) {
+  tbSelColor = c;
+  document.querySelectorAll('.tb-color-btn').forEach(el =>
+    el.classList.toggle('sel', el.style.backgroundColor === c || el.style.background === c));
+}
+
+function selectTbType(t) {
+  document.getElementById('tb-type-inp').value = t;
+  document.querySelectorAll('.tb-type-btn').forEach(el =>
+    el.classList.toggle('sel', el.textContent === t));
+}
+
+function selectTbSpan(s, slotIdx) {
+  tbSelSpan = s;
+  const lbl = s===1?'30m':s===2?'1h':s===3?'1.5h':s===4?'2h':s===6?'3h':'4h';
+  document.querySelectorAll('.tb-span-btn').forEach(el =>
+    el.classList.toggle('sel', el.textContent === lbl));
+  document.getElementById('tb-modal-ttl').textContent = slotToTime(slotIdx) + ' — ' + slotToTime(slotIdx + s);
+}
+
+function saveTbBlock() {
+  const name = document.getElementById('tb-name-inp').value.trim();
+  const type = document.getElementById('tb-type-inp').value.trim();
+  if (!name) { toast('Give the block a name', 'bad'); return; }
+
+  const blocks = getTbBlocks();
+  const old = blocks[tbEditingSlot];
+
+  // Clear old span slots
+  if (old && old.span > 1) {
+    for (let i = tbEditingSlot + 1; i < tbEditingSlot + old.span; i++) delete blocks[i];
+  }
+
+  // Mark new span slots
+  for (let i = tbEditingSlot + 1; i < tbEditingSlot + tbSelSpan; i++) {
+    blocks[i] = { _spanOf: tbEditingSlot };
+  }
+
+  blocks[tbEditingSlot] = {
+    name, type, color: tbSelColor, span: tbSelSpan,
+    tasks: [...tbSelTasks]
+  };
+
+  if (!S.timeBlocks) S.timeBlocks = {};
+  S.timeBlocks[today] = blocks;
+  save();
+  closeTbModal();
+  renderTbGrid();
+  toast('Block saved', 'good');
+}
+
+function deleteTbBlock() {
+  const blocks = getTbBlocks();
+  const b = blocks[tbEditingSlot];
+  if (b && b.span > 1) {
+    for (let i = tbEditingSlot + 1; i < tbEditingSlot + b.span; i++) delete blocks[i];
+  }
+  delete blocks[tbEditingSlot];
+  if (!S.timeBlocks) S.timeBlocks = {};
+  S.timeBlocks[today] = blocks;
+  save();
+  closeTbModal();
+  renderTbGrid();
+}
+
+function closeTbModal() {
+  document.getElementById('tb-modal').classList.remove('show');
+  tbEditingSlot = -1;
+  tbSelTasks = new Set();
+}
+
+function clearTimeBlocks() {
+  if (!S.timeBlocks) S.timeBlocks = {};
+  S.timeBlocks[today] = {};
+  save();
+  renderTbGrid();
+  toast('Blocks cleared', 'good');
+}
+
+// Hook into navigation
+const _origGo = window.go;
+window.go = function(id, el) {
+  _origGo(id, el);
+  if (id === 'todo') renderTbGrid();
+};
+
+if (document.getElementById('screen-todo').classList.contains('active')) {
+  renderTbGrid();
+}
 
 </script>
 </body>
