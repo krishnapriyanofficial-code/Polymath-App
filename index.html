@@ -506,6 +506,15 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
 .tb-task-pick-text{font-size:13px;color:var(--text2);flex:1;line-height:1.3;}
 .tb-task-pick-item.sel .tb-task-pick-text{color:var(--text);}
 .tb-task-pick-empty{font-size:12px;color:var(--text3);font-style:italic;padding:8px 0;}
+
+/* ── DRAG & DROP ── */
+.tb-block.done-block{opacity:0.45;cursor:default;}
+.tb-block.done-block::after{content:'✓';position:absolute;right:8px;top:50%;transform:translateY(-50%);font-size:10px;color:rgba(255,255,255,0.5);}
+.tb-block.dragging{opacity:0.25;border-style:dashed !important;}
+.tb-block.drag-over{box-shadow:0 0 0 2px var(--gold);transform:scale(1.01);}
+.tb-block.shift-preview{border-color:rgba(200,168,75,0.5) !important;background:rgba(200,168,75,0.06) !important;transition:transform 0.15s;}
+.tb-drag-ghost{position:fixed;pointer-events:none;z-index:9999;border-radius:8px;padding:8px 12px;font-size:12px;font-family:'Cinzel',serif;letter-spacing:0.04em;opacity:0.92;box-shadow:0 8px 24px rgba(0,0,0,0.5);max-width:260px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;transform:rotate(2deg);transition:none;}
+.tb-slot[data-slot].drop-target .tb-block{box-shadow:0 0 0 2px var(--gold);}
 </style>
 </head>
 <body>
@@ -693,6 +702,7 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
     <div class="mbtns" style="margin-top:16px;">
       <button class="mbtn can" onclick="closeTbModal()">Cancel</button>
       <button class="mbtn can" style="color:var(--red);border-color:rgba(200,64,64,0.28);" onclick="deleteTbBlock()">Delete</button>
+      <button class="mbtn can" id="tb-done-btn" style="color:var(--inner);border-color:rgba(48,200,120,0.28);" onclick="toggleTbBlockDone()">Mark Done ✓</button>
       <button class="mbtn conf" style="background:var(--gold-dim);border-color:rgba(200,168,75,0.4);color:var(--gold)" onclick="saveTbBlock()">Save</button>
     </div>
   </div>
@@ -2518,26 +2528,38 @@ function renderTbGrid() {
     const row = document.createElement('div');
     row.className = 'tb-slot' + (isHour ? ' hour-start' : '');
     row.style.minHeight = (32 * span + (span - 1) * 2) + 'px';
+    row.dataset.slot = i;
 
-    // Time label — show every hour on the left
+    // Time label
     const timeEl = document.createElement('div');
     timeEl.className = 'tb-time' + (isHour ? ' hour' : '');
     timeEl.textContent = isHour ? slotToTime(i) : '';
 
     const blockEl = document.createElement('div');
-    blockEl.className = 'tb-block' + (b ? ' filled' : '');
+    const isDone = b && b.done;
+    blockEl.className = 'tb-block' + (b && !b._spanOf ? ' filled' : '') + (isDone ? ' done-block' : '');
 
     if (b && !b._spanOf) {
       blockEl.style.background = b.color + '1a';
       blockEl.style.borderColor = b.color + '77';
       blockEl.style.alignItems = 'flex-start';
       blockEl.style.flexDirection = 'column';
+      blockEl.style.position = 'relative';
+
+      // Drag handle (only non-done blocks)
+      if (!isDone) {
+        const handle = document.createElement('div');
+        handle.style.cssText = `position:absolute;right:8px;top:8px;font-size:11px;color:${b.color};opacity:0.5;cursor:grab;user-select:none;`;
+        handle.textContent = '⠿';
+        handle.title = 'Hold to drag';
+        blockEl.appendChild(handle);
+      }
 
       // Block header
       const header = document.createElement('div');
-      header.style.cssText = 'display:flex;align-items:center;width:100%;gap:6px;';
+      header.style.cssText = 'display:flex;align-items:center;width:100%;gap:6px;padding-right:20px;';
       header.innerHTML = `
-        <div class="tb-block-name" style="color:${b.color}">${b.name}</div>
+        <div class="tb-block-name" style="color:${b.color}">${b.name}${isDone ? ' <span style="font-size:10px;opacity:0.6">✓</span>' : ''}</div>
         ${b.type ? `<div class="tb-block-type" style="background:${b.color}22;color:${b.color};border:0.5px solid ${b.color}44">${b.type}</div>` : ''}
       `;
       blockEl.appendChild(header);
@@ -2561,7 +2583,17 @@ function renderTbGrid() {
         blockEl.appendChild(taskWrap);
       }
 
-      blockEl.onclick = () => openTbModal(i);
+      if (!isDone) {
+        blockEl.onclick = (e) => {
+          if (tbDragging) return;
+          openTbModal(i);
+        };
+        // Attach drag listeners
+        attachDragListeners(blockEl, i);
+      } else {
+        blockEl.onclick = () => openTbModal(i);
+      }
+
     } else if (!b) {
       blockEl.innerHTML = `<div class="tb-block-empty">+ add block</div>`;
       blockEl.onclick = () => openTbModal(i);
@@ -2572,7 +2604,6 @@ function renderTbGrid() {
     grid.appendChild(row);
   }
 
-  // Re-render todos so unscheduled section updates
   renderTodos();
 }
 
@@ -2677,6 +2708,9 @@ function openTbModal(slotIdx) {
 
   document.getElementById('tb-modal').classList.add('show');
   setTimeout(() => document.getElementById('tb-name-inp').focus(), 100);
+  // Update done button
+  const doneBtn = document.getElementById('tb-done-btn');
+  if (doneBtn) doneBtn.textContent = (b.done ? 'Mark Undone' : 'Mark Done ✓');
 }
 
 function toggleTbTask(id) {
@@ -2787,6 +2821,213 @@ window.go = function(id, el) {
 
 if (document.getElementById('screen-todo').classList.contains('active')) {
   renderTbGrid();
+}
+
+// ── BLOCK DONE TOGGLE ──
+// Called from modal — marks entire block as done/undone
+function toggleTbBlockDone() {
+  const blocks = getTbBlocks();
+  const b = blocks[tbEditingSlot];
+  if (!b) return;
+  b.done = !b.done;
+  S.timeBlocks[today] = blocks;
+  save();
+  // update button label
+  const btn = document.getElementById('tb-done-btn');
+  if (btn) btn.textContent = b.done ? 'Mark Undone' : 'Mark Done ✓';
+  closeTbModal();
+  renderTbGrid();
+  toast(b.done ? 'Block marked done ✓' : 'Block marked undone', 'good');
+}
+
+// ── DRAG & DROP ENGINE ──
+let tbDragging = false;
+let tbDragSlot = -1;       // slot index being dragged
+let tbDragGhost = null;    // ghost DOM element
+let tbDragOffsetY = 0;
+let tbLongPressTimer = null;
+
+function getSlotAtY(clientY) {
+  const rows = document.querySelectorAll('.tb-slot[data-slot]');
+  for (const row of rows) {
+    const rect = row.getBoundingClientRect();
+    if (clientY >= rect.top && clientY <= rect.bottom) {
+      return parseInt(row.dataset.slot);
+    }
+  }
+  return -1;
+}
+
+function createGhost(b, x, y) {
+  const ghost = document.createElement('div');
+  ghost.className = 'tb-drag-ghost';
+  ghost.style.background = b.color + 'cc';
+  ghost.style.color = '#fff';
+  ghost.style.left = (x - 20) + 'px';
+  ghost.style.top  = (y - 20) + 'px';
+  ghost.textContent = b.name;
+  document.body.appendChild(ghost);
+  return ghost;
+}
+
+function moveGhost(x, y) {
+  if (!tbDragGhost) return;
+  tbDragGhost.style.left = (x - 20) + 'px';
+  tbDragGhost.style.top  = (y - 20) + 'px';
+}
+
+function removeGhost() {
+  if (tbDragGhost) { tbDragGhost.remove(); tbDragGhost = null; }
+}
+
+function attachDragListeners(blockEl, slotIdx) {
+  // Touch: long press to start drag
+  blockEl.addEventListener('touchstart', (e) => {
+    tbLongPressTimer = setTimeout(() => {
+      startDrag(slotIdx, e.touches[0].clientX, e.touches[0].clientY);
+      // Haptic if available
+      if (navigator.vibrate) navigator.vibrate(40);
+    }, 400);
+  }, {passive: true});
+
+  blockEl.addEventListener('touchmove', (e) => {
+    if (!tbDragging) { clearTimeout(tbLongPressTimer); return; }
+    e.preventDefault();
+    const t = e.touches[0];
+    moveGhost(t.clientX, t.clientY);
+    highlightDropTarget(t.clientY);
+  }, {passive: false});
+
+  blockEl.addEventListener('touchend', (e) => {
+    clearTimeout(tbLongPressTimer);
+    if (!tbDragging) return;
+    const t = e.changedTouches[0];
+    const targetSlot = getSlotAtY(t.clientY);
+    endDrag(targetSlot);
+  });
+
+  blockEl.addEventListener('touchcancel', () => {
+    clearTimeout(tbLongPressTimer);
+    cancelDrag();
+  });
+}
+
+function startDrag(slotIdx, x, y) {
+  const blocks = getTbBlocks();
+  const b = blocks[slotIdx];
+  if (!b || b.done || b._spanOf) return;
+
+  tbDragging = true;
+  tbDragSlot = slotIdx;
+
+  // Mark as dragging visually
+  const row = document.querySelector(`.tb-slot[data-slot="${slotIdx}"]`);
+  if (row) row.querySelector('.tb-block')?.classList.add('dragging');
+
+  tbDragGhost = createGhost(b, x, y);
+}
+
+function highlightDropTarget(clientY) {
+  // Clear previous highlights
+  document.querySelectorAll('.tb-block.drag-over,.tb-block.shift-preview').forEach(el => {
+    el.classList.remove('drag-over','shift-preview');
+  });
+
+  const targetSlot = getSlotAtY(clientY);
+  if (targetSlot < 0 || targetSlot === tbDragSlot) return;
+
+  const blocks = getTbBlocks();
+  const dragBlock = blocks[tbDragSlot];
+  if (!dragBlock) return;
+
+  // Highlight drop target
+  const targetRow = document.querySelector(`.tb-slot[data-slot="${targetSlot}"]`);
+  if (targetRow) targetRow.querySelector('.tb-block')?.classList.add('drag-over');
+
+  // Show shift preview for unchecked blocks that would move down
+  if (targetSlot > tbDragSlot) {
+    let cursor = targetSlot;
+    while (cursor < TB_SLOTS) {
+      const b = blocks[cursor];
+      if (!b || b._spanOf) break;
+      if (b.done) break; // locked
+      if (cursor !== tbDragSlot) {
+        const r = document.querySelector(`.tb-slot[data-slot="${cursor}"]`);
+        if (r) r.querySelector('.tb-block')?.classList.add('shift-preview');
+      }
+      cursor += b.span || 1;
+    }
+  }
+}
+
+function endDrag(targetSlot) {
+  tbDragging = false;
+  removeGhost();
+  document.querySelectorAll('.tb-block.dragging,.tb-block.drag-over,.tb-block.shift-preview')
+    .forEach(el => el.classList.remove('dragging','drag-over','shift-preview'));
+
+  if (targetSlot < 0 || targetSlot === tbDragSlot) { tbDragSlot = -1; return; }
+
+  const blocks = getTbBlocks();
+  const dragBlock = {...blocks[tbDragSlot]};
+  if (!dragBlock || dragBlock.done) { tbDragSlot = -1; return; }
+
+  // Remove drag block from its old position
+  const oldSpan = dragBlock.span || 1;
+  for (let i = tbDragSlot; i < tbDragSlot + oldSpan; i++) delete blocks[i];
+
+  // Collect blocks that need to shift (unchecked, after target)
+  // Build ordered list of existing real blocks after targetSlot
+  const toShift = [];
+  let cursor = targetSlot;
+  while (cursor < TB_SLOTS) {
+    const b = blocks[cursor];
+    if (!b || b._spanOf) { cursor++; continue; }
+    if (b.done) break; // locked, stop shifting here
+    toShift.push({slot: cursor, block: {...b}});
+    cursor += b.span || 1;
+  }
+
+  // Clear shifted blocks from their current positions
+  toShift.forEach(({slot, block}) => {
+    for (let i = slot; i < slot + (block.span||1); i++) delete blocks[i];
+  });
+
+  // Place drag block at target
+  dragBlock.span = dragBlock.span || 1;
+  blocks[targetSlot] = dragBlock;
+  for (let i = targetSlot + 1; i < targetSlot + dragBlock.span; i++) {
+    blocks[i] = {_spanOf: targetSlot};
+  }
+
+  // Re-place shifted blocks starting after drag block
+  let nextFree = targetSlot + dragBlock.span;
+  toShift.forEach(({block}) => {
+    // Skip over occupied/done slots
+    while (nextFree < TB_SLOTS && blocks[nextFree] && blocks[nextFree].done) {
+      nextFree += blocks[nextFree].span || 1;
+    }
+    if (nextFree >= TB_SLOTS) return;
+    blocks[nextFree] = block;
+    for (let i = nextFree + 1; i < nextFree + (block.span||1); i++) {
+      blocks[i] = {_spanOf: nextFree};
+    }
+    nextFree += block.span || 1;
+  });
+
+  S.timeBlocks[today] = blocks;
+  save();
+  tbDragSlot = -1;
+  renderTbGrid();
+  toast('Block moved', 'good');
+}
+
+function cancelDrag() {
+  tbDragging = false;
+  tbDragSlot = -1;
+  removeGhost();
+  document.querySelectorAll('.tb-block.dragging,.tb-block.drag-over,.tb-block.shift-preview')
+    .forEach(el => el.classList.remove('dragging','drag-over','shift-preview'));
 }
 
 </script>
